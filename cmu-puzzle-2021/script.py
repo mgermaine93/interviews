@@ -7,14 +7,12 @@
 # figure out how to parse the results out into JSON
 
 
-import platform    # For getting the operating system name
-import subprocess  # For executing a shell command
+from platform import system    # For getting the operating system name
+from subprocess import STDOUT, check_output  # For executing a shell command
 from datetime import datetime, timedelta
 from time import sleep
 from statistics import fmean, median
-# from alive_progress import alive_bar, time
-
-# This program is used to calculate RTT
+from alive_progress import alive_bar
 
 
 def ping_host(host):
@@ -22,10 +20,13 @@ def ping_host(host):
     This does the actual pinging (one ping) of the host.
     """
     # Option for the number of packets as a function of operating system
-    param = '-n' if platform.system().lower() == 'windows' else '-c'
-    output = subprocess.check_output(
-        ['ping', param, '1', host], shell=False, stderr=subprocess.STDOUT, universal_newlines=True)
-    return output
+    param = '-n' if system().lower() == 'windows' else '-c'
+    try:
+        output = check_output(['ping', param, '1', host],
+                              stderr=STDOUT, timeout=10, universal_newlines=True)
+        return output
+    except:
+        return 10
 
 
 def future(num_minutes=1):
@@ -38,12 +39,15 @@ def future(num_minutes=1):
 def get_rtt(host):
     """ This captures the avg rtt value of one ping of one host and returns it as a string """
     output = ping_host(host)
-    try:
-        # this parsing can likely be done better (regex?)
-        avg_rtt = output.splitlines()[5].split(" = ")[1].split("/")[1]
-        return str(avg_rtt)
-    except Exception as e:
-        return e
+    if output != 10:
+        try:
+            # this parsing can likely be done better (regex?)
+            avg_rtt = output.splitlines()[5].split(" = ")[1].split("/")[1]
+            return str(avg_rtt)
+        except Exception as e:
+            return e
+    else:
+        return str(output)
 
 
 def get_raw_result(host, sequence):
@@ -62,11 +66,6 @@ def get_raw_results(host, seconds_between=30, duration_in_minutes=1):
     while future_time > datetime.now():
         # get_rtt has ping_host built-in
         raw_results.append(get_raw_result(host, sequence))
-        # rtt = get_rtt(host)
-        # raw_results.append({
-        #     "seq": sequence,
-        #     "rtt": rtt
-        # })
         sequence += 1
         sleep(seconds_between)  # 30 seconds
     return raw_results
@@ -104,24 +103,24 @@ def get_results_for_single_host(host, avg_mean=True):
 
 def find_avg_rtt(group):
     """ Docstring needed """
-    return float(group['avg_rtt'])
+    # omits the "ms" from the end so that the string can be converted into a float
+    rtt_value = group['avg_rtt']
+    return float(rtt_value[:-2])
 
 
 def get_results(hosts, avg_mean=True, ascending=True):
     """ needs to accept a list of hosts, a mean/median option, and an order option """
     output_dict = {}
     results = []
-    for host in hosts:
-        results.append(
-            get_results_for_single_host(host, avg_mean))
-        # host_data = {
-        #     "host": host,
-        #     # "average rtt": "" or rtt,  # will change
-        #     "raw_results": []
-        # }
-        # rtt = get_rtt(host)
-        # host_data["raw_results"].append({host: str(rtt)})
-        # output_dict[host] = str(rtt)
+    with alive_bar(len(hosts)) as bar:
+        for host in hosts:
+            print(f"Currently pinging {host}...")
+            results.append(
+                get_results_for_single_host(host, avg_mean))
+            bar()
+    print(results)
+    # need to make sure that the 'output_dict' dict is updating correctly here.
+    # (currently, it is not updating)
     if ascending:
         output_dict["results"] = results.sort(
             reverse=False, key=find_avg_rtt)
@@ -134,6 +133,8 @@ def get_results(hosts, avg_mean=True, ascending=True):
 hosts = ['google.com', 'cmu.edu', 'doctorofcredit.com']
 
 print(get_results(hosts=hosts))
+
+# ping_host(host='google.edu')
 
 # print(get_raw_results("pnc.com"))
 
