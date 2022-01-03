@@ -1,0 +1,3 @@
+<!-- Given a list of hosts (i.e. google.com, microsoft.com, cmu.edu...), ping each host every 30 seconds.  Capture the results from each ping and after five minutes, write the results out as JSON.  The results should be grouped by host name and the groups sorted by the average rtt for the host.  You can choose to get the list of hosts from a file or accepted as a command line argument.
+
+It's preferred that you complete this challenge using either Python, Ruby, or Node.JS.  Completing it using C, C#, Rust, or Java is also acceptable.  Use any resources that you would typically rely on when working on something like this.  If you have any questions about completing the challenge, please ask. -->
