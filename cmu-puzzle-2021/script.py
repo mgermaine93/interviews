@@ -7,12 +7,14 @@
 # figure out how to parse the results out into JSON
 
 
+from io import TextIOWrapper
 from platform import system    # For getting the operating system name
 from subprocess import STDOUT, check_output  # For executing a shell command
 from datetime import datetime, timedelta
 from time import sleep
 from statistics import fmean, median
 from alive_progress import alive_bar
+from os.path import isfile
 
 
 def ping_host(host):
@@ -26,10 +28,10 @@ def ping_host(host):
                               stderr=STDOUT, timeout=10, universal_newlines=True)
         return output
     except:
-        return 10
+        return 10000
 
 
-def future(num_minutes=1):
+def future(num_minutes=5):
     """ Returns the a time and date five minutes ahead of when the function is run. """
     now = datetime.now()
     five_minutes_ahead = now + timedelta(minutes=num_minutes)  # will change
@@ -39,7 +41,7 @@ def future(num_minutes=1):
 def get_rtt(host):
     """ This captures the avg rtt value of one ping of one host and returns it as a string """
     output = ping_host(host)
-    if output != 10:
+    if output != 10000:
         try:
             # this parsing can likely be done better (regex?)
             avg_rtt = output.splitlines()[5].split(" = ")[1].split("/")[1]
@@ -58,7 +60,7 @@ def get_raw_result(host, sequence):
     }
 
 
-def get_raw_results(host, seconds_between=30, duration_in_minutes=1):
+def get_raw_results(host, seconds_between=30, duration_in_minutes=5):
     """ Docstring needed """
     raw_results = []
     sequence = 1
@@ -79,12 +81,14 @@ def get_avg_rtt(rtt_values, avg_mean=True):
 
     """
     if avg_mean:
-        return fmean(rtt_values)
+        # rounds to three decimal places
+        return round(fmean(rtt_values), 3)
     else:
-        return median(rtt_values)
+        # rounds to three decimal places
+        return round(median(rtt_values), 3)
 
 
-def get_results_for_single_host(host, avg_mean=True):
+def get_results_for_single_host(host, avg_mean=True, seconds_between=30, duration_in_minutes=5):
     """
     This returns the entire set of results for a single host.
 
@@ -93,7 +97,7 @@ def get_results_for_single_host(host, avg_mean=True):
     output = {
         "host": host
     }
-    results = get_raw_results(host)
+    results = get_raw_results(host, seconds_between, duration_in_minutes)
     # results = [{'seq': 1, 'rtt': '28.727'}, {'seq': 2, 'rtt': '18.751'}]
     avg_rtt = get_avg_rtt([float(item['rtt']) for item in results], avg_mean)
     output["avg_rtt"] = f"{avg_rtt}ms"
@@ -108,17 +112,37 @@ def find_avg_rtt(group):
     return float(rtt_value[:-2])
 
 
-def get_results(hosts, avg_mean=True, ascending=True):
+def read_hosts(hosts):
+    """ Parses out the different hosts from either a file or the command line """
+    # might be redundant...
+    # checks if the the argument exists and is a valid file
+    if type(hosts) is list:
+        return hosts
+    elif isfile(hosts):
+        if isinstance(open(hosts), TextIOWrapper):
+            with open(hosts) as f:
+                contents = f.readlines()
+                cleaned_contents = [line.rstrip('\n') for line in contents]
+                return cleaned_contents
+        else:
+            raise FileNotFoundError(f"No such file or directory: {hosts}")
+    else:
+        raise TypeError(
+            "Can only accept arguments of type TextIOWrapper or list")
+
+
+def get_results(hosts, avg_mean=True, ascending=True, seconds_between=30, duration_in_minutes=5):
     """ needs to accept a list of hosts, a mean/median option, and an order option """
     """ Docstring otherwise needed """
     output_dict = {}
     results = []
+    hosts_to_ping = read_hosts(hosts)
     # progress bar to show status on script
     with alive_bar(len(hosts)) as bar:
-        for host in hosts:
+        for host in hosts_to_ping:
             print(f"Currently pinging {host}...")
             results.append(
-                get_results_for_single_host(host, avg_mean))
+                get_results_for_single_host(host, avg_mean, seconds_between, duration_in_minutes))
             bar()
     if ascending:
         output_dict["results"] = sorted(
@@ -130,9 +154,13 @@ def get_results(hosts, avg_mean=True, ascending=True):
         return output_dict
 
 
-hosts = ['google.com', 'cmu.edu', 'doctorofcredit.com']
+# print(read_hosts(['google.com', 'cmu.edu', 'doctorofcredit.com']))
+# hosts = ['google.com', 'cmu.edu', 'doctorofcredit.com']
+print(get_results('sample_hosts.txt'))
 
-print(get_results(hosts=hosts))
+
+# print(get_results(hosts=hosts))
+# print(get_avg_rtt([1, 2, 3, 4, 5.095943845, 6]))
 
 # SAMPLE OUTPUT:
 #

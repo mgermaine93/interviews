@@ -3,3 +3,4 @@
 <!-- https://pypi.org/project/pingparsing/ -->
 <!-- https://stackoverflow.com/questions/1191374/using-module-subprocess-with-timeout -->
 <!-- https://stackoverflow.com/questions/184814/is-there-some-industry-standard-for-unacceptable-webapp-response-time -->
+<!-- https://stackoverflow.com/questions/12330522/how-to-read-a-file-without-newlines -->

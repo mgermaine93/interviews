@@ -1,0 +1,5 @@
+google.com
+cmu.edu
+npr.org
+pnc.com
+microsoft.com
