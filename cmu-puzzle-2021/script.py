@@ -110,23 +110,23 @@ def find_avg_rtt(group):
 
 def get_results(hosts, avg_mean=True, ascending=True):
     """ needs to accept a list of hosts, a mean/median option, and an order option """
+    """ Docstring otherwise needed """
     output_dict = {}
     results = []
+    # progress bar to show status on script
     with alive_bar(len(hosts)) as bar:
         for host in hosts:
             print(f"Currently pinging {host}...")
             results.append(
                 get_results_for_single_host(host, avg_mean))
             bar()
-    print(results)
-    # need to make sure that the 'output_dict' dict is updating correctly here.
-    # (currently, it is not updating)
     if ascending:
-        output_dict["results"] = results.sort(
-            reverse=False, key=find_avg_rtt)
+        output_dict["results"] = sorted(
+            results, reverse=False, key=find_avg_rtt)
         return output_dict
     else:
-        output_dict["results"] = results.sort(reverse=True, key=find_avg_rtt)
+        output_dict["results"] = sorted(
+            results, reverse=True, key=find_avg_rtt)
         return output_dict
 
 
@@ -134,11 +134,8 @@ hosts = ['google.com', 'cmu.edu', 'doctorofcredit.com']
 
 print(get_results(hosts=hosts))
 
-# ping_host(host='google.edu')
-
-# print(get_raw_results("pnc.com"))
-
-
+# SAMPLE OUTPUT:
+#
 #   "results": [
 #     {
 #       "host" : "www.google.com",
@@ -158,45 +155,3 @@ print(get_results(hosts=hosts))
 #         }
 #       ]
 #     },
-
-
-# print(main_function(['google.com', 'doctorofcredit.com', 'cmu.edu']))
-# hosts = ['harvard.edu', 'google.com', 'pittsburghfoodbank.org', 'doctorofcredit.com']
-# get the current time and the time five minutes from now
-# begin the 30-second clock
-# for each host:
-# for each 30-second block:
-# ping the host
-# capture the rtt (or other results)
-# add the sequence number to the json
-# add the rtt to the json
-# reset the 30 second clock
-
-
-# floats = [1.234, 5.456, 23.412]
-
-# print(get_mean_rtt(floats))
-# print(get_median_rtt(floats))
-# five_minutes_ahead = future()
-# while datetime.now() < five_minutes_ahead:
-#     print(ping(host).split())
-#     # every ten seconds
-#     sleep(10 - time() % 10)
-# return now.timetuple()[5], five_minutes_ahead.timetuple()[5]
-
-
-# param = '-n' if platform.system().lower() == 'windows' else '-c'
-# host = 'google.com'
-# output = subprocess.check_output(
-#     ['ping', param, '1', host], shell=False, stderr=subprocess.STDOUT, universal_newlines=True)
-# avg_rtt = output.splitlines()[5].split(" = ")[1].split("/")[1]
-# print(avg_rtt)
-
-# print(output.splitlines()[5])
-
-# for host in hosts:
-#     print(ping(host))
-# print(ping("wooster.edu"))
-# print(expires())
-# tick()
-# ping("www.google.com")
