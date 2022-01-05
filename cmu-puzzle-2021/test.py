@@ -6,8 +6,7 @@ from time import sleep, time
 from statistics import fmean, median
 from alive_progress import alive_bar
 from os.path import isfile
-
-# STILL NEED TO FIX THE TIMEOUT VALUE TO BE REFLECTED IN MILLISECONDS RATHER THAN SECONDS
+from decimal import Decimal, ROUND_UP
 
 
 def ping_host(host):
@@ -21,7 +20,7 @@ def ping_host(host):
                               stderr=STDOUT, timeout=10, universal_newlines=True)
         return output
     except:
-        return 10000.000
+        return "10000.000"
 
 
 def future(num_minutes=5):
@@ -37,12 +36,12 @@ def ping_hosts(hosts, seconds_between=30, duration_in_minutes=1):
     """
     results = []
     sequence = 1
-    future_time = future(duration_in_minutes)
     start_time = datetime.now()
+    future_time = future(duration_in_minutes)
     while future_time > datetime.now():
         for host in hosts:
             output = str(ping_host(host))
-            if output != "10000":
+            if output != "10000.000":
                 rtt = str(output.splitlines()[
                     1].split(" ")[6].split("=")[1])
             else:
@@ -91,10 +90,12 @@ def calculate_avg_rtt(rtt_values, avg_mean=True):
     """
     if avg_mean:
         # rounds to three decimal places
-        return f"{round(fmean(rtt_values), 3)}ms"
+        arithmetic_mean = round(fmean(rtt_values), 3)
+        return f"{arithmetic_mean:.3f}ms"
     else:
         # rounds to three decimal places
-        return f"{round(median(rtt_values), 3)}ms"
+        arithmetic_median = round(median(rtt_values), 3)
+        return f"{arithmetic_median:.3f}ms"
 
 
 def read_hosts(hosts):
@@ -116,11 +117,11 @@ def read_hosts(hosts):
             "Can only accept arguments of type TextIOWrapper or list")
 
 
-def find_avg_rtt(item):
-    """
-    Needs docstring
-    """
-    return item["average rtt"]
+def find_avg_rtt(result):
+    """ Helper function used in the sorting process.  Returns a decimal """
+    rtt = float(result["average_rtt"][:-2])
+    rounded_rtt = Decimal(rtt).quantize(Decimal('.001'), rounding=ROUND_UP)
+    return rounded_rtt
 
 
 def get_results(hosts, avg_mean=True, ascending=True, seconds_between=30, duration_in_minutes=1):
@@ -128,18 +129,14 @@ def get_results(hosts, avg_mean=True, ascending=True, seconds_between=30, durati
     """ Docstring otherwise needed """
     output_dict = {}
     results = []
-    # hosts_to_ping = read_hosts(hosts)
     raw_results = ping_hosts(hosts, seconds_between=30, duration_in_minutes=1)
-    # progress bar to show status on script
-    with alive_bar(len(raw_results)) as bar:
-        for host in hosts:
-            arranged_results = {
-                "host": host,
-                "average_rtt": calculate_avg_rtt(find_rtt_values_by_host(host, raw_results), avg_mean),
-                "raw_results": arrange_raw_results_by_single_host(raw_results, host)
-            }
-            results.append(arranged_results)
-            bar()
+    for host in hosts:
+        arranged_results = {
+            "host": host,
+            "average_rtt": calculate_avg_rtt(find_rtt_values_by_host(host, raw_results), avg_mean),
+            "raw_results": arrange_raw_results_by_single_host(raw_results, host)
+        }
+        results.append(arranged_results)
     if ascending:
         output_dict["results"] = sorted(
             results, reverse=False, key=find_avg_rtt)
@@ -150,41 +147,6 @@ def get_results(hosts, avg_mean=True, ascending=True, seconds_between=30, durati
         return output_dict
 
 
-hosts = ["npr.org", "cmu.edu", "microsoft.com"]
+hosts = ["npr.org", "cmu.edu", "microsoft.com", "www.facebook.com"]
+
 print(get_results(hosts))
-
-# results = [
-#     {'host': 'npr.org', 'seq': 1, 'rtt': '24.812'},
-#     {'host': 'cmu.edu', 'seq': 1, 'rtt': '59.458'},
-#     {'host': 'microsoft.com', 'seq': 1, 'rtt': '10000'},
-#     {'host': 'npr.org', 'seq': 2, 'rtt': '26.401'},
-#     {'host': 'cmu.edu', 'seq': 2, 'rtt': '56.126'},
-#     {'host': 'microsoft.com', 'seq': 2, 'rtt': '10000'},
-#     {'host': 'npr.org', 'seq': 3, 'rtt': '30.048'},
-#     {'host': 'cmu.edu', 'seq': 3, 'rtt': '55.963'},
-#     {'host': 'microsoft.com', 'seq': 3, 'rtt': '10000'}
-# ]
-
-
-# def track_time():
-#     start_time = datetime.now()
-#     future_time = future(1)
-#     while future_time > start_time:
-#         print(f"This is the start time: {start_time}")
-#         print(f"This is the current time: {datetime.now()}")
-#         print(f"This is the future time: {future_time}")
-#         sleep(2)
-
-
-# print(ping_hosts(hosts))
-# print(arrange_raw_results_by_single_host(results=results, host='npr.org'))
-
-# results = str(ping_host(host="cmu.edu"))
-# # print(results)
-# if results == "10000":
-#     avg_milliseconds = results
-# else:
-#     avg_milliseconds = str(results.splitlines()[1].split(" ")[6].split("=")[1])
-
-# print(avg_milliseconds)
-# output = 'PING npr.org (216.35.221.76): 56 data bytes\n64 bytes from 216.35.221.76: icmp_seq=0 ttl=242 time=26.307 ms\n\n--- npr.org ping statistics ---\n1 packets transmitted, 1 packets received, 0.0% packet loss\nround-trip min/avg/max/stddev = 26.307/26.307/26.307/0.000 ms\n'
