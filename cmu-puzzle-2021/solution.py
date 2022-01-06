@@ -13,11 +13,9 @@ def ping_host(host):
     """Pings a single host and returns the results of the ping.
 
     Args:
-
         host (str) : the host to ping, e.g. "cmu.edu".
 
     Returns:
-
         output (str) : the results of the ping to the given host.
 
     """
@@ -51,15 +49,11 @@ def ping_hosts(hosts, seconds_between=30, duration_in_minutes=5):
     """Pings a user-input list of hosts over every x seconds over the course of y minutes and returns the results.
 
     Args:
-
         hosts (list) : a list of hosts, where each host is of type string, e.g. `['google.com', 'microsoft.com', 'cmu.edu']`.
-
         seconds_between (int) : the amount of time, in seconds, that should occur in-between pings to a host (default value is 30).
-
         duration_in_minutes (int) : the amount of time, in minutes, that should elapse before the results are returned (default value is 5).
 
     Returns:
-
         results (list) : a list of dictionaries.  Each dictionary appears like so:
             {
                 'host' : the host that was pinged (str),
@@ -115,19 +109,17 @@ def arrange_raw_results_by_single_host(results, host):
     """Filters out the returned value of ping_hosts() function to retrieve the 'seq' and 'rtt' values pertaining to a user-input host.
 
     Args:
-
         results (list) : a list of dictionaries containing the following key/value pairs:
             {
                 'host' : the host that was pinged (str),
                 'seq' : a number in a sequence of how many times the host will be pinged (int),
                 'rtt' : the round-trip-time of the ping, in milliseconds, rounded to the nearest thousandths place (str)
             }
-
         host (str) : the host for which you want to find the 'seq' and 'rtt' values.
 
     Returns:
-
         raw_results (list) : a list of dictionaries containing the following key/value pairs specific to the 'host' argument:
+
             {
                 'seq' : a number in a sequence of how many times the host will be pinged (int),
                 'rtt' : the round-trip-time of the ping, in milliseconds, rounded to the nearest thousandths place (str)
@@ -150,9 +142,7 @@ def find_rtt_values_by_host(host, ping_results):
     """Accepts the output of the 'ping_hosts' function (list) and filters out the rtt_values corresponding to a single user-input host.
 
     Args:
-
         host (str) : a single host, e.g. 'npr.org'.
-
         ping_results (list) : a list of dictionaries, each with 'host', 'seq', and 'rtt' keys and corresponding values.  This is similar to what the 'ping_hosts()' function outputs, like so:
 
             [
@@ -164,7 +154,6 @@ def find_rtt_values_by_host(host, ping_results):
             ]
 
     Returns:
-
         rtt_values (list) : a list of floats, with each float representing the rtt value of a single ping to the user-input host.
 
     """
@@ -179,13 +168,10 @@ def calculate_avg_rtt(rtt_values, avg_mean=True):
     """Calculates the average value from a list of rtt values, rounded to three decimal places.
 
     Args:
-
         rtt_values (list) : a list of floats, each representing an rtt value in milliseconds.
-
         avg_mean (bool) : sets the type of average value to be returned.  If set to 'True', then the arithmetic mean will be returned.  If set to 'False', then the arithmetic median will be returned.  The default value is 'True'.
 
     Returns:
-
         The arithmetic mean or median, rounded to three decimal places, as a string and appended with "ms" to represent the units in milliseconds.
 
     """
@@ -203,17 +189,13 @@ def read_hosts(hosts):
     """A helper function that parses out host names from either a .txt file or a list entered from the command line.
 
     Args:
-
         hosts (str or list) : a series of hosts (e.g., google.com, cmu.edu, etc.).  Must be in the form of a .txt file or a list.
 
     Returns:
-
         A list containing a series of hosts to ping.
 
     Raises:
-
         FileNotFoundError : If the file passed in is not found or is not valid.
-
         TypeError : If the 'hosts' value passed in is not of type str or list.
 
     """
@@ -237,8 +219,8 @@ def find_avg_rtt(result):
     """A helper function used in the sorting process of the main 'get_results' function.  Returns the value (of type decimal) associated with the 'avg_rtt' key found in a series of formatted ping results from a single hosts.
 
     Args:
-
         result (dict) : a formatted set of ping results from a single hosts, e.g.:
+
             {
                 "host": "npr.org",
                 "average_rtt": "25.273ms",
@@ -255,7 +237,6 @@ def find_avg_rtt(result):
             }
 
     Returns:
-
         rounded_rtt (decimal) : the value corresponding to the 'avg_rtt' key in the results, but of type decimal and without the 'ms' units at the end.
 
     """
@@ -270,19 +251,13 @@ def get_results(hosts, avg_mean=True, ascending=True, seconds_between=30, durati
         * Returns the results as JSON data.  The data is grouped by host name, with each group sorted by the average rtt for the host.
 
     Args:
-
         hosts (str or list) : a series of hosts (e.g., google.com, cmu.edu, etc.).  Must be in the form of a .txt file or a list.
-
         avg_mean (bool) : sets the type of average value to be returned.  If set to 'True', then the arithmetic mean will be returned.  If set to 'False', then the arithmetic median will be returned.  The default value is 'True'.
-
         ascending (bool) : sorts the results by each host's 'avg_rtt' value.  If set to 'True', the results are sorted from lowest to highest, i.e., smaller rtt values to larger rtt values.  If set to 'False', the results are sorted from highest to lower rtt values.  Default value is 'True'.
-
         seconds_between (int) : the amount of time, in seconds, that should occur in-between pings to a host (default value is 30).
-
         duration_in_minutes (int) : the amount of time, in minutes, that should elapse before the results are returned (default value is 5).
 
     Returns:
-
         output_dict (json) : JSON data representing the full set of results from pinging each host every 'x' seconds over the course of 'y' minutes.  The data is grouped by host name, with each group sorted by the average rtt for the host.
 
     """
