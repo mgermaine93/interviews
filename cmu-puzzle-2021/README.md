@@ -2,12 +2,12 @@
 
 ## Table of Contents
 
-[The Problem](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#the-problem)
-[Questions I Asked / Answers I Received](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#questions-i-asked--answers-i-received)
-[Considerations](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#considerations)
-[Resources I Used](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#resources-i-used)
-[Reflection](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#reflection)
-[Explanation of Files](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#explanation-of-files)
+- [The Problem](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#the-problem)
+- [Questions I Asked / Answers I Received](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#questions-i-asked--answers-i-received)
+- [Considerations](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#considerations)
+- [Resources I Used](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#resources-i-used)
+- [Reflection](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#reflection)
+- [Explanation of Files](https://github.com/mgermaine93/interviews/tree/master/cmu-puzzle-2021#explanation-of-files)
 
 ## The Problem
 
@@ -85,15 +85,15 @@ I chose to support as many operating systems as I could. I wrote this code on a 
 
 I tried to give the user a lot of control over how the end program would function. In doing so, the main program (as written) accepts a number of arguments, but only one argument does not have a default value, which is the list of hosts itself.
 
-For example, since the coding prompt stated to have the program ping each host every 30 seconds for a total of five minutes, I set these values as defaults accordingly in the appropriate places. However, the user should be able to alter these values to ping each host every `x` seconds for a total of `y` minutes.
+For example, since the coding prompt stated to have the program ping each host every 30 seconds for a total of five minutes, I set these values as defaults accordingly in the appropriate places. However, the user should be able to alter these values to ping each host every `x` seconds for a total of `y` minutes as they see fit.
 
-To address the Q/A points above, I also included an option that allows the user to choose how the end results are sorted -- either by ascending or descending `average_rtt` value.
+To address one of the Q/A points above, I also included an option that enables the user to choose how the end results are sorted -- either by ascending or descending `average_rtt` value.
 
-In my opinion, these choices made the program more flexible. If the extra control over the program isn't, it can be removed.
+In my opinion, these choices made the program more flexible. If the extra control over the program isn't needed, it can be removed.
 
 - How should the program accept the list of hosts? (.txt file, user-input list, etc.)
 
-I decided to have the program accept its list of hosts as either a .txt file or a command-line list in order to provide the user with more control.
+Similar to the above point, I decided to have the program accept its list of hosts as either a .txt file or a command-line list in order to provide the user with more control.
 
 ## Resources I Used
 
@@ -108,18 +108,24 @@ The following are some key links and resources I consulted while addressing this
 
 ## Reflection
 
-Overall, I thought this was a great challenge. It proved to be a great opportunity to put what I know to use, and also enabled me to learn a variety of new skills.
+Overall, I thought this was a great challenge. It provided a valuable opportunity to put what I know to use, and also enabled me to learn a variety of new skills along the way.
 
-I chose to write this solution in Python, since it is the language with which I am most familiar. Python also has the benefit of many libraries and modules, and I used many of them in this solution.
+I chose to write this solution in Python, since it is the language with which I am most familiar. Python also has the benefit of many libraries and modules, and I used many of them in this solution. I did my best to include detailed docstrings for each function definition so that it is clear to the reader/user what the code is doing.
 
-One thing I regret not including in this solution is a progress bar of some kind to inform the user that the program is indeed running. Given more time, I would have worked to include something like [Alive-Progress](https://github.com/rsalmei/alive-progress), in order to give real-time progress to the user, which I feel would enhance the user experience more so than just having a blank CLI for five minutes (or however long the user chose to run the program).
+One thing I regret not including in this solution is a progress bar of some kind to inform the user that the program is indeed running. Given more time, I would have worked to include something like [Alive-Progress](https://github.com/rsalmei/alive-progress) in order to give real-time progress to the user. I feel that adding this feature would enhance the user experience more so than just having a blank CLI for five minutes (or however long the user chose to run the program).
 
-I also discovered the [PingParsing](https://pypi.org/project/pingparsing/) library, which likely would have been of great assistance in addressing this code. However, I chose not to use it in the end because it is not something I was familiar with prior to working on this project, and I wanted to emulate the feel of a "whiteboard"-type problem as close as possible. In other words, it was a conscious decision I made to demonstrate what I already knew over what I may have learned during this project. PingParsing also requires Python 3.6, and I wasn't sure what version of Python I should have in mind as I designed my solution. Given that not using PingParsing freed up my program to (ideally) run on versions of Python older than 3.6, I feel this was a knowledgeable decision.
+I also discovered the [PingParsing](https://pypi.org/project/pingparsing/) library, which likely would have been of great assistance in addressing this coding prompt. However, I chose not to use it in the end because it is not something I was familiar with prior to working on this project, and I wanted to emulate the feel of a "whiteboard"-type problem as close as possible. In other words, it was a conscious decision I made to demonstrate what I already knew over what I may have learned during this project.
+
+On a different, but related, note, PingParsing also requires Python 3.6, and I wasn't sure what version of Python I should have in mind as I designed my solution. Given that not using PingParsing freed up my program to (ideally) run on versions of Python older than 3.6, I feel this was a knowledgeable decision.
 
 Another thing I needed to figure out was what to do in the event of a ping timeout. One option I considered was to just throw away the ping `seq` that timed out and either move on or try pinging the host again. However, I opted to set a default timeout value so that, if the ping timed out on or after that value, than the `rtt` value would automatically be set to that value and the program would move on to the next iteration. In deciding what this value should be, I found this [link](https://stackoverflow.com/questions/184814/is-there-some-industry-standard-for-unacceptable-webapp-response-time) to be quite helpful.
 
+Had Python not been an option in which to code this solution, I would have used JavaScript because I am currently more familiar with JavaScript than the other languages listed in the prompt.
+
+Lastly, given more time, I would have written a series of unit tests to verify that the code works as expected. I likely would have done this using the [unittest](https://docs.python.org/3/library/unittest.html) module or the [pytest](https://docs.pytest.org/) tool.
+
 ## Explanation of Files
 
-- [Sample Hosts](https://github.com/mgermaine93/interviews/blob/master/cmu-puzzle-2021/sample_hosts.txt) is a text file of hosts. I used this file to test that my solution could accept a .txt file as an argument.
-- [Sample Output](https://github.com/mgermaine93/interviews/blob/master/cmu-puzzle-2021/sample_output.json) is the output that is printed out to the command line when the [solution.py](https://github.com/mgermaine93/interviews/blob/master/cmu-puzzle-2021/solution.py) file is run as written.
-- [Solution](https://github.com/mgermaine93/interviews/blob/master/cmu-puzzle-2021/solution.py) is the Python code I wrote to solve the coding prompt.
+- [sample_hosts.txt](https://github.com/mgermaine93/interviews/blob/master/cmu-puzzle-2021/sample_hosts.txt) is a text file of hosts. I used this file to test that my solution could accept a .txt file as an argument.
+- [sample_output.json](https://github.com/mgermaine93/interviews/blob/master/cmu-puzzle-2021/sample_output.json) is the output that is printed out to the command line when the [solution.py](https://github.com/mgermaine93/interviews/blob/master/cmu-puzzle-2021/solution.py) file is run as written.
+- [solution.py](https://github.com/mgermaine93/interviews/blob/master/cmu-puzzle-2021/solution.py) is the Python code I wrote to solve the coding prompt.
